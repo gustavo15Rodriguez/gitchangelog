@@ -10,8 +10,16 @@
 {{#sections}}
 
 {{#commits}}
-* [{{{id}}}]({{{shortRemote}}}) - *{{{date}}}* -
-{{#condition_i}}**{{{first_parameter}}}[{{{second_parameter}}}]({{{jira_url}}}/{{{second_parameter}}})**{{/condition_i}}{{^condition_i}}**{{{first_parameter}}}{{{second_parameter}}}**{{/condition_i}} {{{third_parameter}}} - {{#body}}{{{body_indented}}}{{/body}} - **{{#authors}}{{{.}}}{{/authors}}**
+
+## {{#condition_i}}**[{{{second_parameter}}}]({{{jira_url}}}/{{{second_parameter}}})**{{/condition_i}}{{^condition_i}}**{{{second_parameter}}}**{{/condition_i}}
+
+**DATE:** {{{date}}}
+
+**TITLE:** {{{third_parameter}}}
+
+{{#body}}{{{body_indented}}}{{/body}}
+
+* * *
 
 
 {{/commits}}

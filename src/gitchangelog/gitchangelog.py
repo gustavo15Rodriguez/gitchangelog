@@ -1525,7 +1525,8 @@ def versions_data_iter(repository, revlist=None,
                        warn=warn,        ## Mostly used for test
                        jira_url="",
                        clean=None,
-                       title=""
+                       title="",
+                       show=None,
                        ):
     """Returns an iterator through versions data structures
 
@@ -1624,7 +1625,7 @@ def versions_data_iter(repository, revlist=None,
                 for item in commit_f:
                     find_c = True
                     for i in clean:
-                        if i in item:
+                        if i.lower() in item.lower():
                             find_c = False
 
                     if find_c:
@@ -1818,6 +1819,19 @@ def change_title(opts):
         return "Changelog"
 
 
+## Parameters to show
+def show_parameters(opts):
+    try:
+        if opts.show:
+            to_show = opts.show
+            return to_show
+
+        else:
+            return
+    except TypeError:
+        return None
+
+
 def changelog(title, output_engine=mustache,
               unreleased_version_label="unreleased",
               warn=warn,        ## Mostly used for test
@@ -1939,6 +1953,9 @@ def parse_cmd_line(usage, description, epilog, exname, version):
 
     parser.add_argument('-t', '--title', nargs="*", help="To change of "
                         "changelog title.", action="store")
+
+    parser.add_argument('-s', '--show', nargs="*", help="To show of "
+                        "commits preferred.", action="store")
 
     ## Remove "show" as first argument for compatibility reason.
 
@@ -2162,13 +2179,14 @@ def main():
     revlist = get_revision(repository, config, opts)
     clean = get_parameters(opts)
     title = change_title(opts)
+    show = show_parameters(opts)
     config['unreleased_version_label'] = eval_if_callable(
         config['unreleased_version_label'])
     manage_obsolete_options(config)
 
     try:
         content = changelog(
-            repository=repository, revlist=revlist, clean=clean, title=title,
+            repository=repository, revlist=revlist, clean=clean, title=title, show=show,
             ignore_regexps=config['ignore_regexps'],
             section_regexps=config['section_regexps'],
             unreleased_version_label=config['unreleased_version_label'],
