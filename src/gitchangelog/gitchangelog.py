@@ -232,7 +232,8 @@ usage_msg = """
   %(exname)s {-v|--version}
   %(exname)s [--debug|-d] [REVLIST]
   %(exname)s {-c|--clean}
-  %(exname)s {-t|--title}"""
+  %(exname)s {-t|--title}
+  %(exname)s {-s|--show}"""
 
 description_msg = """\
 Run this command in a git repository to output a formatted changelog
@@ -1643,6 +1644,28 @@ def versions_data_iter(repository, revlist=None,
                             "jira_url": jira_url,
                         })
 
+            elif show:
+                for item in commit_f:
+                    show_f = False
+                    for i in show:
+                        if i.lower() in item.lower():
+                            show_f = True
+
+                    if show_f:
+                        sections[matched_section].append({
+                            "id": commit.sha1_short,
+                            "date": commit.date,
+                            "author": commit.author_name,
+                            "authors": commit.authors,
+                            "body": body_process(commit.body),
+                            "shortRemote": get_url(repository, commit),
+                            "first_parameter": t_split["first_s"],
+                            "second_parameter": t_split["s_identifier"],
+                            "third_parameter": t_split["complement"],
+                            "condition_i": t_split["condition_i"],
+                            "jira_url": jira_url,
+                        })
+
             else:
                 sections[matched_section].append({
                     ## Add the id and date to use in the code output.
@@ -1732,7 +1755,7 @@ def r_send(commit, jira_url):
     second_split = commit_split_b(first_split)
     to_change = find_replace(second_split, jira_url)
 
-    if re.search(r"^[A-Z]+-[\d]+$", second_split[0]):
+    if re.search(r"^[A-Z]+-[\d]+", second_split[0]):
         condition_i = True
 
     else:
